@@ -45,7 +45,7 @@ def RecursiveFill(rRef, file, line, depth):
                 currentKey = key
                 rRef[currentKey] = {}
                 rRef[currentKey]["Description"] = []
-                rRef[currentKey]["Overall"] = []
+                rRef[currentKey]["Notes"] = []
                 depth = len(ID[0][0])
                 if(line.split(",") > 1):
                     linesp = line.split(",")[1:]
@@ -74,7 +74,7 @@ def BeginRecursiveFill(rRef):
     line = "BEGIN"
     depth = 0
     rRef["Description"] = []
-    rRef["Overall"] = []
+    rRef["Notes"] = []
     currentKey = ""
     while (line != ""):
         #lets figure out if it is a description.
@@ -99,7 +99,7 @@ def BeginRecursiveFill(rRef):
                 currentKey = key
                 rRef[currentKey] = {}
                 rRef[currentKey]["Description"] = []
-                rRef[currentKey]["Overall"] = []
+                rRef[currentKey]["Notes"] = []
                 depth = len(ID[0][0])
                 if(line.split(",") > 1):
                     linesp = line.split(",")[1:]
@@ -116,11 +116,25 @@ def BeginRecursiveFill(rRef):
                 RecursiveFill(rRef[currentKey], file, line, depth + 1)
                 #we need to go down a level and pass the currentKey
 
-def BuildMenu(parentMenu, hash = {}):
+def BuildMenu(parentMenu, hash = {}, name = ""):
     #first we need to order it
-    for key in (hash.keys().sort()):
-        #we need to check if the hash[key] contains an 'overall'
-        print ""
+    l = hash.keys()
+    l.sort()
+    for key in l:
+        #create a button for keys: "Notes"
+        if(key == "Description" or key == "Notes"):
+            parentMenu.add_command(label = key)
+            continue
+        #currentMenu = Menu ( parentMenu, tearoff = 0 )
+        
+        if(len(hash[key]) > 0):
+            nextMenu = Menu ( parentMenu, tearoff = 0 )
+            BuildMenu(nextMenu, hash[key], key)
+            parentMenu.add_cascade(label = key, menu = nextMenu)
+
+        #parentMenu.add_cascade(label = key, menu = currentMenu)
+    
+        
 
 
 mySyllabus = {}
@@ -143,9 +157,12 @@ mb.grid()
 mb.menu  =  Menu ( mb, tearoff = 0 )
 mb["menu"]  =  mb.menu
     
-mb1 = Menu ( mb.menu, tearoff = 0 )
-mb1.add_command(label = "first's Command", command = Hello())
-mb.menu.add_cascade(label = "first", menu = mb1)
+BuildMenu(mb.menu, mySyllabus, "menu")
+
+
+#mb1 = Menu ( mb.menu, tearoff = 0 )
+#mb1.add_command(label = "first's Command", command = Hello())
+#mb.menu.add_cascade(label = "first", menu = mb1)
 #mayoVar  = IntVar()
 #ketchVar = IntVar()
 
