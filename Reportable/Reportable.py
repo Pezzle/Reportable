@@ -122,8 +122,10 @@ def BuildMenu(parentMenu, hash = {}, name = ""):
     l.sort()
     for key in l:
         #create a button for keys: "Notes"
-        if(key == "Description" or key == "Notes"):
-            parentMenu.add_command(label = key)
+        if(key == "Notes"):
+            parentMenu.add_command(label = key, command= lambda: myPrint(hash["Description"]))
+            continue
+        if(key == "Description"):
             continue
         #currentMenu = Menu ( parentMenu, tearoff = 0 )
         
@@ -145,8 +147,8 @@ BeginRecursiveFill(mySyllabus)
 top = Tkinter.Tk()
 
 
-def Hello():
-    print "Hello"
+def myPrint(str):
+    print str
 
 # Code to add widgets will go here...
 
