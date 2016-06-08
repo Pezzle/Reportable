@@ -45,6 +45,7 @@ def RecursiveFill(rRef, file, line, depth):
                 currentKey = key
                 rRef[currentKey] = {}
                 rRef[currentKey]["Description"] = []
+                rRef[currentKey]["Overall"] = []
                 depth = len(ID[0][0])
                 if(line.split(",") > 1):
                     linesp = line.split(",")[1:]
@@ -115,95 +116,12 @@ def BeginRecursiveFill(rRef):
                 RecursiveFill(rRef[currentKey], file, line, depth + 1)
                 #we need to go down a level and pass the currentKey
 
-def LoadReference(rRef):
-    #open the file
-    file = open("test.txt",'r')
-    #format looks like:
-    '''
-    '1. Chapter One', (optional Description)
-        1.1 SubChapter
-            (Optional Description)
-        1.2 SubChapter, (...)
-        
+def BuildMenu(parentMenu, hash = {}):
+    #first we need to order it
+    for key in (hash.keys().sort()):
+        #we need to check if the hash[key] contains an 'overall'
+        print ""
 
-    '''
-    currentTitle = ""
-    currentDescription = ""
-    currentIndex = ""
-    line = file.readline();
-    line = line.strip();
-    depth = 0
-    prevID = [""]
-    currentSubChapter = ""
-    while(line != ""):
-        #first determine if the line is a Chapter/SubChapter or a description
-        #until we have seen a Chapter/SubChapter disregard any text
-        lineList = line.split()
-        #now reconstitute it
-        secondaryLine = ""
-        for item in lineList[1:]:
-            secondaryLine += item + " "
-        title = secondaryLine.split(",")[0]
-        secondaryLine = secondaryLine.split(",")[1:]
-        description = ""
-        for item in secondaryLine:
-            description += item.strip() + ", "
-        description = description[:-2]
-        indexID = lineList[0]
-        ID = re.findall(r'([0-9]+(.)*)+', indexID)
-        #if ID == "" then it is a description
-        isDescription = True
-        if(len(ID) != 0):
-            isDescription = False
-        #then if it isnt we need to figure out if it is a continuation of the current chapter's subchapters or
-        #whether it is a new chapter
-        isSub = False
-        if(not isDescription):
-            if(prevID[0] == ""):
-                print "First Chapter"
-                currentTitle = title
-                currentDescription = description
-                rRef[currentTitle]["Description"] = description
-                rRef[currentTitle] = {}
-                #we know its the FIRST chapter
-                depth = 1
-            else:
-                if(len(prevID[0][0]) < len(ID[0][0])):
-                    print "A New SubChapter"
-                    depth = 2
-                    currentDescription = ""
-                    currentSubChapter = title
-                    rRef[currentTitle][title] = currentDescription
-                if(len(prevID[0][0]) == len(ID[0][0])):
-                    print "A Continuation of the current chapter"
-                    currentDescription = ""
-                    rRef[currentTitle][title] = currentDescription
-                    currentSubChapter = title
-                if(len(prevID[0][0]) > len(ID[0][0])):
-                    depth = 1
-                    print "A new Chapter"
-                    currentDescription = ""
-                    currentTitle = title
-                    currentDescription = description
-                    rRef[currentTitle]["Description"] = description
-                    rRef[currentTitle] = {}
-            prevID = ID
-        else:
-            print "More description"
-            if(depth == 1):
-                rRef[currentTitle]["Description"] = rRef[currentTitle]["Description"] + "\n" + line
-            if(depth == 2):
-                rRef[currentTitle][currentSubChapter] = rRef[currentTitle][currentSubChapter] + "\n" + line
-            #append it to the Chapters description
-        line = (file.readline()).strip()
-
-        #eg: simply if IDprev vs IDnew, if IDnew is longer then it is a subchapter of the current chapter
-        #if it is the same then it is a continuation
-        #if it is shorter then its a new chapter
-        #if(
-
-
-#def BuildMenu(hash, parentMenu,
 
 mySyllabus = {}
 
